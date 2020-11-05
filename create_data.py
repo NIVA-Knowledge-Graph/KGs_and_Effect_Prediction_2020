@@ -98,12 +98,12 @@ def plot_data(filename):
 
 def main():
     
-    #t = Taxonomy(directory='../taxdump/', verbose=True)
+    t = Taxonomy(directory='../taxdump/', verbose=True)
     
-    #ne = DownloadedWikidata(filename='./data/ncbi_to_eol.csv', verbose=False)
+    ne = DownloadedWikidata(filename='./data/ncbi_to_eol.csv', verbose=False)
     
-    #n = list(set(t.graph.subjects(predicate=t.namespace['rank'],
-                                #object=t.namespace['rank/species'])))
+    n = list(set(t.graph.subjects(predicate=t.namespace['rank'],
+                                object=t.namespace['rank/species'])))
 
     tr = Traits(directory='../eol/', verbose=True)
     out = defaultdict(list)
@@ -115,166 +115,97 @@ def main():
     df = pd.DataFrame(data=out)
     df.to_csv('traits_list.csv')
     
-    exit()
-    
-    #conv = ne.convert(n, strip=True)
-    #converted = [(tr.namespace[i],k) for k,i in conv.items() if i != 'no mapping']
+    conv = ne.convert(n, strip=True)
+    converted = [(tr.namespace[i],k) for k,i in conv.items() if i != 'no mapping']
     
 
-    #tr.replace(converted)
+    tr.replace(converted)
     
-    #ed = Effects(directory='../ecotox_data/',verbose=False)
+    ed = Effects(directory='../ecotox_data/',verbose=False)
     
-    #n = list(set(t.graph.subjects(predicate=t.namespace['rank'], object=t.namespace['rank/species'])))
+    n = list(set(t.graph.subjects(predicate=t.namespace['rank'], object=t.namespace['rank/species'])))
     
-    #species = LogMapMapping(filename='./data/final_mappings.txt',strip=True).convert(n,strip=True,reverse=True)
-    #species = [(ed.namespace['taxon/'+i],k) for k,i in species.items() if i != 'no mapping']
+    species = LogMapMapping(filename='./data/final_mappings.txt',strip=True).convert(n,strip=True,reverse=True)
+    species = [(ed.namespace['taxon/'+i],k) for k,i in species.items() if i != 'no mapping']
     
-    #ed.replace(species)
+    ed.replace(species)
     
-    #n = list(set(ed.graph.objects(predicate=ed.namespace['chemical'])))
-    #chemicals = DownloadedWikidata(filename='./data/cas_to_mesh.csv').convert(n,reverse=False,strip=True)
-    #chemicals = [(k,URIRef('http://id.nlm.nih.gov/mesh/'+str(i))) for k,i in chemicals.items() if i != 'no mapping']
+    n = list(set(ed.graph.objects(predicate=ed.namespace['chemical'])))
+    chemicals = DownloadedWikidata(filename='./data/cas_to_mesh.csv').convert(n,reverse=False,strip=True)
+    chemicals = [(k,URIRef('http://id.nlm.nih.gov/mesh/'+str(i))) for k,i in chemicals.items() if i != 'no mapping']
     
-    #ed.replace(chemicals)
+    ed.replace(chemicals)
     
-    #print('Part 1. done.')
+    print('Part 1. done.')
     
-    #_,species = zip(*species)
-    #_,chemicals = zip(*chemicals)
+    _,species = zip(*species)
+    _,chemicals = zip(*chemicals)
     
-    #chemicals = set(map(str, chemicals))
-    #species = set(map(str, species))
+    chemicals = set(map(str, chemicals))
+    species = set(map(str, species))
     
-    #endpoints = EffectsAPI(dataobject=ed, verbose=True).get_endpoint(c=None, s=None)
+    endpoints = EffectsAPI(dataobject=ed, verbose=True).get_endpoint(c=None, s=None)
              
-    #effects = [str(ed.namespace['effect/'+ef]) for ef in ['MOR','NER','DVP','GRO','IMM','INJ','ITX','MPH','PHY','REP']]
-    #d = defaultdict(list)
-    #for c,s,cc,cu,ep,ef,sd,sdu in tqdm(endpoints):
-        #if str(s) in species and str(c) in chemicals:
-            #if str(ef) in effects:
-                #try:
-                    #factor = unit_conversion(str(cu),'http://qudt.org/vocab/unit#MilligramPerLitre')
-                #except:
-                    #factor = 0
+    effects = [str(ed.namespace['effect/'+ef]) for ef in ['MOR','NER','DVP','GRO','IMM','INJ','ITX','MPH','PHY','REP']]
+    d = defaultdict(list)
+    for c,s,cc,cu,ep,ef,sd,sdu in tqdm(endpoints):
+        if str(s) in species and str(c) in chemicals:
+            if str(ef) in effects:
+                try:
+                    factor = unit_conversion(str(cu),'http://qudt.org/vocab/unit#MilligramPerLitre')
+                except:
+                    factor = 0
                     
-                #if factor > 0:
-                    #cc = float(cc)
-                    #cc = cc*factor
-                    #cc = np.log(cc+EPSILON)
+                if factor > 0:
+                    cc = float(cc)
+                    cc = cc*factor
+                    cc = np.log(cc+EPSILON)
                     
-                    #ep = str(ep).split('/')[-1]
-                    #try:
-                        #num = float('.'.join([re.findall(r'\d+', s).pop(0) for s in ep.split('.')]))
-                    #except IndexError:
-                        #continue
+                    ep = str(ep).split('/')[-1]
+                    try:
+                        num = float('.'.join([re.findall(r'\d+', s).pop(0) for s in ep.split('.')]))
+                    except IndexError:
+                        continue
                     
-                    #d['degree'].append(num/100)
-                    #d['chemical'].append(str(c))
-                    #d['species'].append(str(s))
-                    #d['concentration'].append(cc)
-                    #d['effect'].append(str(ef))
+                    d['degree'].append(num/100)
+                    d['chemical'].append(str(c))
+                    d['species'].append(str(s))
+                    d['concentration'].append(cc)
+                    d['effect'].append(str(ef))
     
-    #df = pd.DataFrame(data=d)
-    #df.to_csv('./data/data.csv')
+    df = pd.DataFrame(data=d)
+    df.to_csv('./data/data.csv')
     
     
-    #print('Part 2. done.')
+    print('Part 2. done.')
     
-    #tmp = set([URIRef(a) for a in set(df['species'])])
-    #triples = get_subgraph(tmp, t.graph+tr.graph, backtracking=0)
-    #s,p,o = zip(*triples)
-    #data = {'subject':s, 
-            #'predicate':p, 
-            #'object':o}
-    #df = pd.DataFrame(data=data)
-    #df.to_csv('./data/taxonomy.csv')
+    tmp = set([URIRef(a) for a in set(df['species'])])
+    triples = get_subgraph(tmp, t.graph+tr.graph, backtracking=0)
+    s,p,o = zip(*triples)
+    data = {'subject':s, 
+            'predicate':p, 
+            'object':o}
+    df = pd.DataFrame(data=data)
+    df.to_csv('./data/taxonomy.csv')
     
-    #entities = set([s for s,p,o in triples]) | set([o for s,p,o in triples])
-    #print('Relational density, KGs', len(set(triples))/len(set([p for s,p,o in triples])))
-    #print('Entity density KGs', len(set(triples))/len(entities))
-    #print('Absolute density KGs', len(set(triples))/(len(entities)*(len(entities)-1)))
-    
-        
-    #root = 'https://www.ncbi.nlm.nih.gov/taxonomy/taxon/1'
-    #triples = []
-    #root = URIRef(root)
-    #for a in tqdm(set(df['species'])):
-        #a = URIRef(a)
-        #path = get_longest_path(a,root,t.graph,p=RDFS.subClassOf)
-        #for i in range(len(path)-1):
-            #triples.append((path[i],RDFS.subClassOf,path[i+1]))
-    #s,p,o = zip(*triples)
-    #data = {'subject':s, 
-            #'predicate':p, 
-            #'object':o}
-    #df = pd.DataFrame(data=data)
-    #df.to_csv('./data/taxonomy_hierarchy_only.csv')
+    entities = set([s for s,p,o in triples]) | set([o for s,p,o in triples])
+    print('Relational density, KGs', len(set(triples))/len(set([p for s,p,o in triples])))
+    print('Entity density KGs', len(set(triples))/len(entities))
+    print('Absolute density KGs', len(set(triples))/(len(entities)*(len(entities)-1)))
+  
         
         
-    #df = pd.read_csv('./data/data.csv')
-    #mesh_graph = Graph()
-    #mesh_graph.parse('../mesh/mesh.nt',format='nt')
+    df = pd.read_csv('./data/data.csv')
+    mesh_graph = Graph()
+    mesh_graph.parse('../mesh/mesh.nt',format='nt')
     
-    #all_elements = set()
-    
-    #for root, name in zip(['http://id.nlm.nih.gov/mesh/D007287',
-                           #'http://id.nlm.nih.gov/mesh/D009930',
-                           #'http://id.nlm.nih.gov/mesh/D006571',
-                           #'http://id.nlm.nih.gov/mesh/D011083',
-                           #'http://id.nlm.nih.gov/mesh/D046911',
-                           #'http://id.nlm.nih.gov/mesh/D006730',
-                           #'http://id.nlm.nih.gov/mesh/D045762',
-                           #'http://id.nlm.nih.gov/mesh/D002241',
-                           #'http://id.nlm.nih.gov/mesh/D008055',
-                           #'http://id.nlm.nih.gov/mesh/D000602',
-                           #'http://id.nlm.nih.gov/mesh/D009706',
-                           #'http://id.nlm.nih.gov/mesh/D045424',
-                           #'http://id.nlm.nih.gov/mesh/D001685',
-                           #'http://id.nlm.nih.gov/mesh/D001697',
-                           #'http://id.nlm.nih.gov/mesh/D004364',
-                           #'http://id.nlm.nih.gov/mesh/D020164'],
-                            #['Inorganic_chemicals',
-                              #'Organic_chemicals',
-                              #'Hetrocyclic_compounds',
-                              #'Polycyclic_compounds',
-                              #'Macromolecular_substances',
-                              #'Hormones_Hormone_Substitutes_Hormone_Antagonists',
-                              #'Enzymes_and_Coenzymes',
-                              #'Carbohydrates',
-                              #'Lipids',
-                              #'Amino_Acids_Peptides_Proteins',
-                              #'Nucleic_Acids_Nucleotides_Nucleosides',
-                              #'Complex_Mixtures',
-                              #'Biological_Factors',
-                              #'Biomedical_Dental_Materials',
-                              #'Pharmaceutical_Preparations',
-                              #'Chemical_Actions_Uses']):
-        #triples = []
-        #root = URIRef(root)
-        #for a in tqdm(set(df['chemical'])):
-            #a = URIRef(a)
-            #path = get_longest_path(a,root,mesh_graph,p='http://id.nlm.nih.gov/mesh/vocab#broaderDescriptor')
-            #for i in range(len(path)-1):
-                #triples.append((path[i],RDFS.subClassOf,path[i+1]))
-        #if len(triples) > 0:
-            #s,p,o = zip(*triples)
-            #data = {'subject':s, 
-                    #'predicate':p, 
-                    #'object':o}
-            #df = pd.DataFrame(data=data)
-            #df.to_csv('./data/'+name+'_hierarchy.csv')
-        
-            #all_elements |= set(s)
-            #all_elements |= set(o)
-    
-    #triples = get_subgraph(set([URIRef(a) for a in set(df['chemical'])]), mesh_graph, backtracking=0)
-    #s,p,o = zip(*triples)
-    #data = {'subject':s, 
-            #'predicate':p, 
-            #'object':o}
-    #df = pd.DataFrame(data=data)
-    #df.to_csv('./data/chemicals.csv')
+    triples = get_subgraph(set([URIRef(a) for a in set(df['chemical'])]), mesh_graph, backtracking=0)
+    s,p,o = zip(*triples)
+    data = {'subject':s, 
+            'predicate':p, 
+            'object':o}
+    df = pd.DataFrame(data=data)
+    df.to_csv('./data/chemicals.csv')
     
     """
     MOA 
@@ -294,30 +225,6 @@ def main():
     chembl_graph.load('../chembl/chembl_26.0_moa.ttl',format='ttl')
     chembl_graph.load('../chembl/chembl_26.0_target.ttl',format='ttl')
     chembl_graph.load('../chembl/chembl_26.0_targetrel.ttl',format='ttl')
-    
-    #organisms = set(chembl_graph.objects(predicate=cco['taxonomy']))
-    #count = defaultdict(int)
-    #org_names = set()
-    #data_overlap = 0
-    #for o in organisms:
-        #o = str(o)
-        #if 'ncbi' in o:
-            #o = o.split('=')[-1]
-            #uri = t.namespace['taxon/'+o]
-            #if str(uri) in set(df['species']): data_overlap+=1
-            #try:
-                #div = [x for x in t.graph.objects(subject=uri,predicate=RDF.type) if 'division' in str(x)][0]
-                #div_names = list(t.graph.objects(subject=div,predicate=RDFS.label))[0]
-                #names = list(map(str,t.graph.objects(subject=uri,predicate=t.namespace['scientific_name'])))[0]
-                #org_names.add(str(names))
-                #count[str(div_names)] += 1
-            #except: 
-                #pass
-    
-    #print(org_names)
-    #print(count)
-    #print(data_overlap/len(set(df['species'])))
-    
     
     for s,p,o in get_subgraph(to_look_for,chembl_graph,backtracking=1):
         tmp = mapping.convert([str(o)],strip=True)[str(o)]

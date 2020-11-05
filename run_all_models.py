@@ -16,25 +16,14 @@ from sklearn.model_selection import train_test_split
 import glob
 import json
 
-from sklearn.preprocessing import normalize, MinMaxScaler
 import argparse
 import pandas as pd
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.utils import shuffle
-from analyse_results import dor
 
-DATA_FILE = './data/data.csv'
 RANDOM_SEED = 42
 
-hier_embeddings_dir = '../hierarchy-based-embeddings/Embeddings/'
-
 KGE_EMBEDDINGS_DIR = './results/pretrained_embeddings/'
-
-#chemical_hier_embeddings_files = file_list = glob.glob(hier_embeddings_dir+'*_hierarchy.csv') 0.5288300126791
-#chemical_hier_embeddings_files = file_list = glob.glob(hier_embeddings_dir+'*_forest.csv') #0.5435945630073548
-
-chemical_hier_embeddings_files = [hier_embeddings_dir + 'all_nodes_chemical_full_hierarchy.csv']
-taxonomy_hier_embeddings_files = [hier_embeddings_dir + 'all_nodes_taxonomy_hierarchy_only0.csv']
 
 models = [
             'DistMult', 
@@ -47,12 +36,6 @@ models = [
             'pRotatE',
             'HAKE'
         ]
-
-def normalize_data(X,y):
-    x1,x2,x3 = zip(*X)
-    x3 = np.asarray(x3)
-    x3 = (x3-min(x3))/(max(x3)-min(x3))
-    return list(zip(x1,x2,x3)),y
 
 def save_data(filename,data):
     X,y = data
@@ -131,19 +114,6 @@ def main(args, params):
                             hp_file='pred_hp/%s_all_pretrained_' % SAMPLING +'.csv',
                             params=params)
         
-    #if args.model == "hierandpretrained":
-        #for model1 in models:
-            #for model2 in models:
-                #fit_hier_kg_combination(train, valid, test,
-                                        #KGE_EMBEDDINGS_DIR+model1, 
-                                        #KGE_EMBEDDINGS_DIR+model2, 
-                                        #chemical_hier_embeddings_files,
-                                        #taxonomy_hier_embeddings_files, 
-                                        #results_file='./results/%s_combo_embedding_' % SAMPLING +model1+'_'+model2+'_all.csv', 
-                                        #hp_file='./pred_hp/%s_combo_embedding_' % SAMPLING +model1+'_'+model2+'_all.csv', 
-                                        #params=params)
-        
-        
     #Select best models from pretrained and run them using sim embedding.
     if args.model in ['pretrainedensemble','sim']:
         best_models_auc = {}
@@ -153,15 +123,7 @@ def main(args, params):
                 best_models_auc[(model1,model2)] = df.loc['ba','value']
                 
         best_models_auc = sorted(best_models_auc.items(),key=lambda x: x[1], reverse=True)
-        
-    #if args.model == "pretrainedensemble":
-        #k = args.num_models
-        #fit_pretrained(train, valid, test,
-                                #[KGE_EMBEDDINGS_DIR+m[0] for m,_ in best_models[:k]],
-                                #[KGE_EMBEDDINGS_DIR+m[1] for m,_ in best_models[:k]],
-                                #results_file='results/%s_pretrained_%s_best' % (SAMPLING,str(k))+'.csv',
-                                #hp_file='pred_hp/%s_pretrained_%s_best' % (SAMPLING, str(k)) +'.csv',
-                                #params=params)
+
     if args.model == "sim":
         m,_ = best_models_auc[args.num_models-1]
         model1, model2 = m

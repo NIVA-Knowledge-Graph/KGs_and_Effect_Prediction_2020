@@ -40,20 +40,6 @@ def youden_max(y_true,y_pred):
     
     return y[idx], thresholds[idx]
 
-def load_results(f):    
-    df = pd.read_csv(f,index_col='metric')
-    df = df.fillna(-float('inf'))
-    #mean = [df.loc[a,'value'] for a in ['tp','fn','tn','fp']]
-    #std = [df.loc[a,'std'] for a in ['tp','fn','tn','fp']]
-    
-    #metrics = ['sensitivity','specificity','ba','yi','mcc','auc']
-    
-    metrics = ['sensitivity','specificity','ba','yi','auc']
-    
-    return {'value':[df.loc[a,'value'] for a in metrics], 
-                'std':[df.loc[a,'std'] for a in metrics], 
-                'score': df.loc['ba','value']}
-
 def metrics(y_true,y_pred):
     tn,fp,fn,tp = confusion_matrix(y_true,np.around(y_pred)).ravel()
     
@@ -64,7 +50,7 @@ def metrics(y_true,y_pred):
     
     return [sensitivity(tp,fn,tn,fp), specificity(tp,fn,tn,fp), j, jmax, th, balanced_accuracy(tp,fn,tn,fp)]
 
-def load_predictions(f):
+def load_results(f):
     arr = np.load(f)
     y_pred, y_true = arr[:-1,:], arr[-1,:]
     m = []
@@ -79,10 +65,11 @@ def load_predictions(f):
     
     return {'value':mean,'std':std,'score':score}
 
+def main():
 
-sampling_methods = ['none','chemical','species','both']
+    sampling_methods = ['none','chemical','species','both']
 
-models = [
+    models = [
             'DistMult', 
             'ComplEx',
             'HolE',
@@ -94,10 +81,9 @@ models = [
             'ConvE',
         ]
 
-d = 'results/'
-header = 'Model & '+' & '.join(['Sensitivity','Specificity','YI',r'YI$_{max}$',r't_{max}'])+r'\\ \hline'
+    d = 'results/'
+    header = 'Model & '+' & '.join(['Sensitivity','Specificity','YI',r'YI$_{max}$',r't_{max}'])+r'\\ \hline'
 
-def main():
 
     popular_models1 = defaultdict(int)
     popular_models2 = defaultdict(int)
@@ -113,7 +99,7 @@ def main():
         best = {}
         for f in pretrained_files + one_hot_files + finetune_files:
             try:
-                best[f] = load_predictions(f.replace('/','/predictions_').replace('csv','npy'))
+                best[f] = load_results(f.replace('/','/predictions_').replace('csv','npy'))
             except FileNotFoundError or KeyError:
                 pass
             

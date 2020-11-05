@@ -1,1 +1,4 @@
-# KGs_and_Effect_Prediction_2020
+# Knowledge Graph Embeddings and Chemical Effect Prediction, 2020. 
+
+
+

@@ -208,9 +208,6 @@ def fit_sim_model(train, valid, test, model1, model2, results_file='results.csv'
     hptuner = HPTuner(runs=params['MAX_TRIALS'],objectiv_direction='max')
     
     if params['use_pretrained']:
-        #hptuner.add_fixed_hp('weights_file1','./pretrained_models/'+model1+'_chemical/model')
-        #hptuner.add_fixed_hp('weights_file2','./pretrained_models/'+model2+'_taxonomy/model')
-        
         def f(f1,f2,items):
             #This is for sannity. Entites should be in the same order.
             ids = dict(np.load(f2))

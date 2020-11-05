@@ -184,54 +184,54 @@ def main(filtered=False,unique=False,ncbi_instances=None,ecotox_instances=None,t
         print(d,'f1',f_measure(reference_mapping1,mapping1[d]))
         print('\n')
     
-    #for d1 in mapping1:
-        #print(d1)
-        #print('# mapping',len(mapping1[d1]))
-        #for d2 in mapping1:
-            #tmp = mapping1[d1] - mapping1[d2]
-            #try:
-                #print('Disagreement ',d1,'\t',d2,len(tmp)/len(mapping1[d1]))
-            #except:
-                #pass
-        #print('\n')
+    for d1 in mapping1:
+        print(d1)
+        print('# mapping',len(mapping1[d1]))
+        for d2 in mapping1:
+            tmp = mapping1[d1] - mapping1[d2]
+            try:
+                print('Disagreement ',d1,'\t',d2,len(tmp)/len(mapping1[d1]))
+            except:
+                pass
+        print('\n')
     
-    #for d in mapping1:
-        #mappings = mapping1[d]
-        #filename = 'output_mappings/'+d.replace('/','').replace(' ','_')+'.txt'
-        #with open(filename,'w') as f:
-            #s = '|'.join(['ecotox','ncbi']) +'\n'
-            #f.write(s)
-            #for e1,e2 in mappings:
-                #s = '|'.join([e1,e2]) +'\n'
-                #f.write(s)
+    for d in mapping1:
+        mappings = mapping1[d]
+        filename = 'output_mappings/'+d.replace('/','').replace(' ','_')+'.txt'
+        with open(filename,'w') as f:
+            s = '|'.join(['ecotox','ncbi']) +'\n'
+            f.write(s)
+            for e1,e2 in mappings:
+                s = '|'.join([e1,e2]) +'\n'
+                f.write(s)
     
-    #with open('output_mappings/final_mappings.txt','w') as f:
-        #s = '|'.join(['e1','e2','score']) +'\n'
-        #f.write(s)
-        #for e1,e2 in mapping1['logmap_outputs/ UNION aml_output/']:
-            #s = '|'.join([e1,e2,"1"]) +'\n'
-            #f.write(s)
+    with open('output_mappings/final_mappings.txt','w') as f:
+        s = '|'.join(['e1','e2','score']) +'\n'
+        f.write(s)
+        for e1,e2 in mapping1['logmap_outputs/ UNION aml_output/']:
+            s = '|'.join([e1,e2,"1"]) +'\n'
+            f.write(s)
 
 if __name__ == '__main__':
-    
-    #graph = Graph()
-    #graph.load('../TERA_OUTPUT/ncbi.nt',format='nt')
-    #ncbi_instances = set(graph.subjects(object=URIRef('https://www.ncbi.nlm.nih.gov/taxonomy/rank/species')))
-    #ncbi_instances = set(map(str,ncbi_instances))
+    #Filter species.
+    graph = Graph()
+    graph.load('../TERA_OUTPUT/ncbi.nt',format='nt')
+    ncbi_instances = set(graph.subjects(object=URIRef('https://www.ncbi.nlm.nih.gov/taxonomy/rank/species')))
+    ncbi_instances = set(map(str,ncbi_instances))
         
-    #graph = Graph()
-    #graph.load('../TERA_OUTPUT/ecotox_taxonomy.nt',format='nt')
-    #ecotox_instances = set(graph.subjects(object=URIRef('https://cfpub.epa.gov/ecotox/rank/species')))
-    #ecotox_instances = set(map(str,ecotox_instances))
+    graph = Graph()
+    graph.load('../TERA_OUTPUT/ecotox_taxonomy.nt',format='nt')
+    ecotox_instances = set(graph.subjects(object=URIRef('https://cfpub.epa.gov/ecotox/rank/species')))
+    ecotox_instances = set(map(str,ecotox_instances))
     
     #1-N
-    #main(filtered=False,unique=False, ncbi_instances=ncbi_instances,ecotox_instances=ecotox_instances)
+    main(filtered=False,unique=False, ncbi_instances=ncbi_instances,ecotox_instances=ecotox_instances)
     #1-N precision
     main(filtered=True,unique=False)
     #1-1
-    #main(filtered=False,unique=True, ncbi_instances=ncbi_instances,ecotox_instances=ecotox_instances)
+    main(filtered=False,unique=True, ncbi_instances=ncbi_instances,ecotox_instances=ecotox_instances)
     #1-1 precision
-    #main(filtered=True,unique=True)
+    main(filtered=True,unique=True)
     
     
     

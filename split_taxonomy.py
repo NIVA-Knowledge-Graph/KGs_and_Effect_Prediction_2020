@@ -1,28 +1,9 @@
 
 
+#Gather data from https://zenodo.org/record/4244313.
+
 from rdflib import URIRef, Graph, Literal
 from rdflib.namespace import RDFS, RDF
-
-#graph = Graph()
-#graph.load('../TERA_OUTPUT/effects.nt',format='nt')
-
-#tests = set(graph.subjects(object=URIRef('https://cfpub.epa.gov/ecotox/cas/134623')))
-#tests = tests.intersection(set(graph.subjects(object=URIRef('https://cfpub.epa.gov/ecotox/taxon/1'))))
-
-#for j,t in enumerate(tests):
-    #g = Graph()
-    #results = set(graph.objects(subject=t,predicate=URIRef('https://cfpub.epa.gov/ecotox/hasResult')))
-    
-    #for i,r in enumerate(results):
-        #g += graph.triples((t,None,None))
-        
-        #g += graph.triples((r,None,None))
-        
-        #for o in g.objects():
-            #g += graph.triples((o,None,None))
-        #g.serialize('./example_tests/%s_%s.nt' %(str(j),str(i)) ,format='nt')
-        
-
 
 graph = Graph()
 graph.load('../TERA_OUTPUT/ecotox_taxonomy.nt',format='nt')
