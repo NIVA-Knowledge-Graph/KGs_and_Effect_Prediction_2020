@@ -2,7 +2,7 @@
 
 Scripts and outputs related to paper. 
 
-TERA snapshot is avalible [here](https://zenodo.org/deposit/4244313).
+TERA snapshot is avalible [here](https://doi.org/10.5281/zenodo.4244313).
 
 To run the codes you must install [KGE-Keras](https://github.com/NIVA-Knowledge-Graph/KGE-Keras).
 
