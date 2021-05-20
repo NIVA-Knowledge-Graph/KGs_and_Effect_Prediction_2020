@@ -2,7 +2,8 @@
 
 Scripts and outputs related to the paper **Prediction of Adverse Biological Effects of Chemicals Using Knowledge Graph Embeddings**. 
 
-TERA snapshot is avalible [here](https://doi.org/10.5281/zenodo.4244313).
+A snapshot of TERA (the Toxicological Effect and Risk Assessment Knowledge Graph) is avalible as a Zenodo dataset: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4244313.svg)](https://doi.org/10.5281/zenodo.4244313)
+
 
 To run the codes you must install [KGE-Keras](https://github.com/NIVA-Knowledge-Graph/KGE-Keras).
 
